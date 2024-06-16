@@ -10,3 +10,9 @@
 [submodule "kindr_ros"]
 	path = kindr_ros
 	url = https://github.com/ANYbotics/kindr_ros.git
+[submodule "urdf2robcogen"]
+	path = urdf2robcogen
+	url = https://github.com/leggedrobotics/urdf2robcogen.git
+[submodule "quadruped_robcogen"]
+	path = quadruped_robcogen
+	url = https://github.com/ori-drs/quadruped_robcogen.git
