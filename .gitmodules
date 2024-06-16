@@ -4,3 +4,6 @@
 [submodule "anymal_c_simple_description"]
 	path = anymal_c_simple_description
 	url = https://github.com/ANYbotics/anymal_c_simple_description.git
+[submodule "kindr"]
+	path = kindr
+	url = https://github.com/ANYbotics/kindr.git
