@@ -7,3 +7,6 @@
 [submodule "kindr"]
 	path = kindr
 	url = https://github.com/ANYbotics/kindr.git
+[submodule "kindr_ros"]
+	path = kindr_ros
+	url = https://github.com/ANYbotics/kindr_ros.git
