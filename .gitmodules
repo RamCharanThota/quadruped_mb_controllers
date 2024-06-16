@@ -1,0 +1,12 @@
+[submodule "anymal_b_simple_description"]
+	path = anymal_b_simple_description
+	url = https://github.com/ANYbotics/anymal_b_simple_description.git
+[submodule "anymal_c_simple_description"]
+	path = anymal_c_simple_description
+	url = https://github.com/ANYbotics/anymal_c_simple_description.git
+[submodule "kindr"]
+	path = kindr
+	url = https://github.com/ANYbotics/kindr.git
+[submodule "kindr_ros"]
+	path = kindr_ros
+	url = https://github.com/ANYbotics/kindr_ros.git

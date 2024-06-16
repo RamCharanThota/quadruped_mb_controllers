@@ -1,0 +1,13 @@
+<launch>
+  <!-- Load the URDF into the parameter server -->
+   <!-- Give the robot description parameter a name -->
+  <arg name="description_name"           default="robot_description"/>
+  <!-- Set robot description path -->
+  <arg name="description_file"           default="$(find anymal_c_simple_description)/urdf/anymal.urdf"/>
+
+
+  <!-- Run xacro script to generate ANYmal description -->
+  <param name="$(arg description_name)" textfile="$(arg description_file)"/>
+
+  <node name="anymal_c_kin_dyn" pkg="anymal_c_kin_dyn" type="anymal_c_kin_dyn_node" output="screen"/>
+</launch>
