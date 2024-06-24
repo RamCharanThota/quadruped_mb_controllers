@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(anymal_c_kin_dyn)
+project(inverse_dynamic_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,15 +8,16 @@ project(anymal_c_kin_dyn)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  anymal_b_simple_description
   anymal_c_simple_description
-  rospy
-  kindr
-  kindr_ros
+  #ros_control
   roscpp
+  rospy
   std_msgs
   urdf
 )
 
+find_package(pinocchio REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -107,9 +108,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES anymal_c_kin_dyn
-#  CATKIN_DEPENDS anymal_c_simple_descriptionrospy kindr kindr_ros roscpp std_msgs urdf
+   INCLUDE_DIRS include
+#  LIBRARIES inverse_dynamic_control
+#  CATKIN_DEPENDS anymal_b_simple_description anymal_c_simple_description pinocchio ros_control roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -126,7 +127,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/anymal_c_kin_dyn.cpp
+#   src/${PROJECT_NAME}/inverse_dynamic_control.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,7 +138,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/anymal_c_kin_dyn_node.cpp)
+add_executable(${PROJECT_NAME}_node src/inverse_dynamic_control.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -152,7 +153,11 @@ add_executable(${PROJECT_NAME}_node src/anymal_c_kin_dyn_node.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
- )
+)
+
+target_link_libraries(${PROJECT_NAME}_node
+pinocchio::pinocchio
+)
 
 #############
 ## Install ##
@@ -201,7 +206,7 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_anymal_c_kin_dyn.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_inverse_dynamic_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
