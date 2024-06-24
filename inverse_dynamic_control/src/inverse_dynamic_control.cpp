@@ -1,48 +1,51 @@
 
 #include<pinocchio/fwd.hpp>
 #include <ros/ros.h>
-#include <std_msgs/Float64MultiArray.h>
-#include <pinocchio/parsers/sample-models.hpp>
-#include <pinocchio/algorithm/joint-configuration.hpp>
-#include <pinocchio/algorithm/rnea.hpp>
+#include <ros/package.h>
 
-int main(int argc, char** argv)
+
+#include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/algorithm/rnea.hpp"
+#include "pinocchio/parsers/urdf.hpp"
+
+// directory here.
+#ifndef PINOCCHIO_MODEL_DIR
+  #define PINOCCHIO_MODEL_DIR "path_to_the_model_dir"
+#endif
+
+
+
+int main(int argc, char ** argv)
 {
-  // Initialize ROS node
-  ros::init(argc, argv, "pinocchio_example_node");
-  ros::NodeHandle nh;
 
-  // Create a publisher to publish tau (joint torques)
-  ros::Publisher tau_pub = nh.advertise<std_msgs::Float64MultiArray>("joint_torques", 10);
+    ros::init(argc, argv, "urdf_to_pinocchio_node");
+    ros::NodeHandle nh;
 
-  // Create Pinocchio model and data structures
+  // Change to your own URDF file here, or give a path as command-line argument
+  std::string package_path=ros::package::getPath("anymal_c_simple_description");
+  // Construct the URDF file path
+  std::string urdf_filename = package_path + "/urdf/anymal.urdf";
+  
+
+  // Load the URDF model
   pinocchio::Model model;
-  pinocchio::buildModels::manipulator(model);
+  pinocchio::urdf::buildModel(urdf_filename, model);
+
+  // Build a data frame associated with the model
   pinocchio::Data data(model);
 
-  // Compute initial state (assuming neutral position)
-  Eigen::VectorXd q = pinocchio::neutral(model);
-  Eigen::VectorXd v = Eigen::VectorXd::Zero(model.nv);
-  Eigen::VectorXd a = Eigen::VectorXd::Zero(model.nv);
+  // Sample a random joint configuration, joint velocities and accelerations
+  Eigen::VectorXd q = pinocchio::randomConfiguration(model);      // in rad for the UR5
+  Eigen::VectorXd v = Eigen::VectorXd::Zero(model.nv); // in rad/s for the UR5
+  Eigen::VectorXd a = Eigen::VectorXd::Zero(model.nv); // in rad/s² for the UR5
 
-  // Compute joint torques (RNEA - Recursive Newton-Euler Algorithm)
-  const Eigen::VectorXd & tau = pinocchio::rnea(model, data, q, v, a);
+  // Computes the inverse dynamics (RNEA) for all the joints of the robot
+  Eigen::VectorXd tau = pinocchio::rnea(model, data, q, v, a);
 
-  // Publish tau as a ROS message
-  std_msgs::Float64MultiArray tau_msg;
-  tau_msg.data.resize(model.nv);
-  for (int i = 0; i < model.nv; ++i) {
-    tau_msg.data[i] = tau[i];
-  }
+  // Print out to the vector of joint torques (in N.m)
+  std::cout << "Joint torques: " << data.tau.transpose() << std::endl;
 
-  // Publish tau
-  tau_pub.publish(tau_msg);
+   ros::spin();
 
-  // Print tau to console
-  ROS_INFO_STREAM("tau = " << tau.transpose());
-
-  // Spin ROS node
-  ros::spin();
-
-  return 0;
+    return 0;
 }

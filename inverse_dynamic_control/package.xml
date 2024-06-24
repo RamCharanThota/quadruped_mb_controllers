@@ -52,6 +52,8 @@
   <build_depend>anymal_b_simple_description</build_depend>
   <build_depend>anymal_c_simple_description</build_depend>
   <build_depend>pinocchio</build_depend>
+  <build_depend>urdf</build_depend>
+
   <!-- <build_depend>ros_control</build_depend> -->
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
@@ -59,6 +61,8 @@
   <build_export_depend>anymal_b_simple_description</build_export_depend>
   <build_export_depend>anymal_c_simple_description</build_export_depend>
   <build_export_depend>pinocchio</build_export_depend>
+    <build_export_depend>urdf</build_export_depend>
+
   <!-- <build_export_depend>ros_control</build_export_depend> -->
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
@@ -66,6 +70,8 @@
   <exec_depend>anymal_b_simple_description</exec_depend>
   <exec_depend>anymal_c_simple_description</exec_depend>
   <exec_depend>pinocchio</exec_depend>
+  <exec_depend>urdf</exec_depend>
+
   <!-- <exec_depend>ros_control</exec_depend> -->
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
