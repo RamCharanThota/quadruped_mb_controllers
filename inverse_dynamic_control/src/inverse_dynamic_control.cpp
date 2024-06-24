@@ -4,14 +4,14 @@
 #include <ros/package.h>
 
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/parsers/urdf.hpp"
 
-// directory here.
-#ifndef PINOCCHIO_MODEL_DIR
-  #define PINOCCHIO_MODEL_DIR "path_to_the_model_dir"
-#endif
+#include <pinocchio/parsers/urdf.hpp>
+#include <pinocchio/multibody/model.hpp>
+#include <pinocchio/multibody/data.hpp>
+#include <pinocchio/algorithm/rnea.hxx>
+#include <pinocchio/algorithm/joint-configuration.hpp>
+#include <pinocchio/algorithm/crba.hpp>
+
 
 
 
@@ -41,6 +41,24 @@ int main(int argc, char ** argv)
 
   // Computes the inverse dynamics (RNEA) for all the joints of the robot
   Eigen::VectorXd tau = pinocchio::rnea(model, data, q, v, a);
+
+  // compute the mass matrix 
+  // Compute the mass matrix
+    pinocchio::crba(model, data, q);
+    Eigen::MatrixXd M = data.M;
+    M.triangularView<Eigen::StrictlyLower>() = M.transpose().triangularView<Eigen::StrictlyLower>();
+
+    // Compute the Coriolis matrix
+    Eigen::MatrixXd C = pinocchio::computeCoriolisMatrix(model, data, q, v);
+
+    // Compute the gravity vector
+    Eigen::VectorXd g = pinocchio::computeGeneralizedGravity(model, data, q);
+
+    // Print the results
+    std::cout << "Mass Matrix (M):\n" << M << std::endl;
+    std::cout << "Coriolis Matrix (C):\n" << C << std::endl;
+    std::cout << "Gravity Vector (g):\n" << g.transpose() << std::endl;
+
 
   // Print out to the vector of joint torques (in N.m)
   std::cout << "Joint torques: " << data.tau.transpose() << std::endl;
