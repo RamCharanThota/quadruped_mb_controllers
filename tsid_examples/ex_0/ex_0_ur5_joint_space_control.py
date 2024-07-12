@@ -38,11 +38,13 @@ formulation.addMotionTask(postureTask, conf.w_posture, 1, 0.0)
 trajPosture = tsid.TrajectoryEuclidianConstant("traj_joint", q0)
 postureTask.setReference(trajPosture.computeNext())
 
-v_max = conf.v_max_scaling * model.velocityLimit
+print("the model velocity limit is ",model.velocityLimit)
+
+v_max =  conf.v_max_scaling* model.velocityLimit
 v_min = -v_max
-# jointBoundsTask = tsid.TaskJointBounds("task-joint-bounds", robot, conf.dt)
-# jointBoundsTask.setVelocityBounds(v_min, v_max)
-# formulation.addMotionTask(jointBoundsTask, conf.w_joint_bounds, 0, 0.0)
+jointBoundsTask = tsid.TaskJointBounds("task-joint-bounds", robot, conf.dt)
+jointBoundsTask.setVelocityBounds(v_min, v_max)
+formulation.addMotionTask(jointBoundsTask, conf.w_joint_bounds, 0, 0.0)
 
 solver = tsid.SolverHQuadProgFast("qp solver")
 solver.resize(formulation.nVar, formulation.nEq, formulation.nIn)
@@ -65,7 +67,7 @@ if USE_VIEWER:
     robot_display.display(q0)
 #    robot_display.viewer.gui.setCameraTransform(0, conf.CAMERA_TRANSFORM)
 
-N = conf.N_SIMULATION
+N = 2000 #conf.N_SIMULATION
 tau = np.empty((robot.na, N)) * nan
 q = np.empty((robot.nq, N + 1)) * nan
 v = np.empty((robot.nv, N + 1)) * nan
@@ -93,9 +95,9 @@ for i in range(0, N):
     q_ref[:, i] = q0 + amp * np.sin(two_pi_f * t + phi)
     v_ref[:, i] = two_pi_f_amp * np.cos(two_pi_f * t + phi)
     dv_ref[:, i] = -two_pi_f_squared_amp * np.sin(two_pi_f * t + phi)
-    samplePosture.pos(q_ref[:, i])
-    samplePosture.vel(v_ref[:, i])
-    samplePosture.acc(dv_ref[:, i])
+    samplePosture.value(q_ref[:, i])
+    samplePosture.derivative(v_ref[:, i])
+    samplePosture.second_derivative(dv_ref[:, i])
     postureTask.setReference(samplePosture)
 
     HQPData = formulation.computeProblemData(t, q[:, i], v[:, i])
@@ -118,7 +120,7 @@ for i in range(0, N):
     # numerical integration
     v_mean = v[:, i] + 0.5 * dt * dv[:, i]
     v[:, i + 1] = v[:, i] + dt * dv[:, i]
-    q[:, i + 1] = pin.integrate(model, q[:, i], dt * v_mean)
+    q[:, i + 1] = pin.integrate(model, q[:, i], dt* v_mean)
     t += conf.dt
 
     if i % conf.DISPLAY_N == 0:
